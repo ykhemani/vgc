@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"github.com/hashicorp/vault/api"
-	"os"
   "flag"
+  "fmt"
+  "github.com/hashicorp/vault/api"
+  "os"
   "log"
+  //"reflect"
 )
 
 var vault_addr string = "https://127.0.0.1:8200"
@@ -21,7 +22,7 @@ var password string
 
 var auth string = "token"
 
-var VClient *api.Client // global variable
+var VClient *api.Client
 
 ////////////////////////////////////////////////////////////////////////////////
 // usage
@@ -69,7 +70,7 @@ func vault_auth_with_approle(role_id string, secret_id string) error {
     return err
   }
 
-//  fmt.Printf("Vault token from approle auth: %s\n", resp.Auth.ClientToken)
+//  fmt.Printf("DEBUG: Vault token from approle auth: %s\n", resp.Auth.ClientToken)
   return nil
 }
 
@@ -101,22 +102,53 @@ func vault_auth_with_ldap_userpass(method string, username string, password stri
 // Read secret from Vault
 func vault_read_secret(vault_path string) {
   c := VClient.Logical()
+
+  fmt.Printf("INFO: Requested secret at path %s:\n", vault_path)
+
   secret, err := c.Read(vault_path)
+
   if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error reading secret at %s: %v", vault_path, err)
 		return
 	}
 
-  m, ok := secret.Data["data"].(map[string]interface{})
-	if !ok {
-		fmt.Printf("Error: %T %#v\n", secret.Data["data"], secret.Data["data"])
-    return
-	}
+  for key, value := range secret.Data {
+    //fmt.Printf("value is of type %s\n", reflect.TypeOf(value))
 
-  fmt.Printf("Requested secret at path %s:\n", vault_path)
-  for key, value := range m {
-    fmt.Printf("\t%s \u2192 %s\n", key, value)
+    switch valueType := value.(type) {
+      case string:
+        // process kv v1
+        fmt.Printf("\t%s \u2192 %s\n", key, value)
+      case map[string]interface {}:
+        // process kv v2
+        if key == "data" {
+          m, ok := value.(map[string]interface{})
+
+          if !ok {
+            fmt.Printf("Error getting secret data\n")
+            return
+          }
+
+          for subKey, subValue := range m {
+            fmt.Printf("\t%s \u2192 %s\n", subKey, subValue)
+          }
+        }
+      default:
+        fmt.Printf("Unexpected value type %v\n", valueType)
+    }
   }
+
+  // m, ok := secret.Data["data"].(map[string]interface{})
+	// if !ok {
+	// 	fmt.Printf("Error getting secret data: %T %#v\n", secret.Data["data"], secret.Data["data"])
+  //   return
+	// }
+  //
+  // fmt.Printf("\n\n%v\n\n", m)
+  //
+  // for key, value := range m {
+  //   fmt.Printf("\t%s \u2192 %s\n", key, value)
+  // }
 
   return
 }
@@ -165,7 +197,7 @@ func main() {
   }
 
   fmt.Printf("INFO: vault_addr is %s\n", vault_addr)
-  fmt.Printf("INFO: auth is %s\n", auth)
+  fmt.Printf("INFO: auth method is %s\n", auth)
   fmt.Printf("INFO: vault_path is %s\n", vault_path)
 
   fmt.Printf("\n")
