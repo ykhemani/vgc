@@ -142,13 +142,13 @@ func main() {
 
   flag.StringVar(&vault_path, "vault_path", LookupEnvOrString("VAULT_PATH", vault_path), "Path in Vault from which to retrieve the secret.")
 
-  flag.StringVar(&auth, "auth", LookupEnvOrString("VAULT_AUTH", auth), "Auth method - token, approle or ldap.")
+  flag.StringVar(&auth, "auth", LookupEnvOrString("VAULT_AUTH", auth), "Auth method - token, approle, ldap or userpass.")
 
   flag.StringVar(&role_id, "role_id", LookupEnvOrString("VAULT_APPROLE_ROLE_ID", role_id), "AppRole Auth Role ID.")
   flag.StringVar(&secret_id, "secret_id", LookupEnvOrString("VAULT_APPROLE_SECRET_ID", secret_id), "AppRole Auth Secret ID.")
 
-  flag.StringVar(&username, "username", "", "Vault username.")
-  flag.StringVar(&password, "password", "", "Vault password.")
+  flag.StringVar(&username, "username", "", "Vault username if using ldap or userpass auth.")
+  flag.StringVar(&password, "password", "", "Vault password if using ldap or userpass auth.")
 
   flag.Parse()
 
