@@ -22,7 +22,7 @@ Usage: ./vgc
   -vault_path string
     	Path in Vault from which to retrieve the secret.
   -vault_token string
-    Vault Token if using token auth (may also be specified via VAULT_TOKEN environment variable)
+        Vault Token if using token auth (may also be specified via VAULT_TOKEN environment variable)
 ```
 
 For example:
