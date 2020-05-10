@@ -5,20 +5,24 @@ This application connects to a [HashiCorp](https://hashicorp.com) [Vault](https:
 ## Usage
 
 ```
-vgc
--auth string
-    Auth method. (token|approle)
--role_id string
-    AppRole Auth Role ID.
--secret_id string
-    AppRole Auth Secret ID.
--vault_addr string
-    Vault Address (may also be specified via VAULT_ADDR environment variable)
--vault_path string
-    Path in Vault from which to retrieve the secret
--vault_token string
-    Vault Token (may also be specified via VAULT_TOKEN environment variable)
-
+$ ./vgc -h
+Usage: ./vgc
+  -auth string
+    	Auth method - token, approle, ldap, userpass. (default "token")
+  -password string
+    	Vault password if using ldap or userpass auth.
+  -role_id string
+    	AppRole Auth Role ID.
+  -secret_id string
+    	AppRole Auth Secret ID.
+  -username string
+    	Vault username if using ldap or userpass auth.
+  -vault_addr string
+        Vault Address (may also be specified via VAULT_ADDR environment variable)
+  -vault_path string
+    	Path in Vault from which to retrieve the secret.
+  -vault_token string
+    Vault Token if using token auth (may also be specified via VAULT_TOKEN environment variable)
 ```
 
 For example:
