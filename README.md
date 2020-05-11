@@ -19,7 +19,7 @@ Usage: ./vgc
     	Vault username if using ldap or userpass auth.
   -vault_addr string
         Vault Address (may also be specified via VAULT_ADDR environment variable)
-  -vault_path string
+  -secret_path string
     	Path in Vault from which to retrieve the secret.
   -vault_token string
         Vault Token if using token auth (may also be specified via VAULT_TOKEN environment variable)
@@ -28,10 +28,10 @@ Usage: ./vgc
 For example:
 
 ```
-$  vgc -vault_path kv/data/demo/app2 -auth token
+$  vgc -secret_path kv/data/demo/app2 -auth token
 INFO: vault_addr is https://vault.service.consul:8200
 INFO: auth is token
-INFO: vault_path is kv/data/demo/app2
+INFO: secret_path is kv/data/demo/app2
 
 Requested secret at path kv/data/demo/app2:
 	api_token → E5145E36-F180-477A-BF56-E63DFC9D15BB
@@ -40,14 +40,14 @@ Requested secret at path kv/data/demo/app2:
 ```
 
 ```
-$  vgc -vault_path kv/data/demo/app2 \
+$  vgc -secret_path kv/data/demo/app2 \
      -auth approle \
      -role_id 01234567-890a-bcde-f012-34567890abcd \
      -secret_id a0123456-7890-abcd-ef01-234567890abc
 
 INFO: vault_addr is https://vault.service.consul:8200
 INFO: auth is approle
-INFO: vault_path is kv/data/demo/app2
+INFO: secret_path is kv/data/demo/app2
 
 Requested secret at path kv/data/demo/app2:
 	service_name → widget

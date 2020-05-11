@@ -10,7 +10,7 @@ import (
 )
 
 var vault_addr string = "https://127.0.0.1:8200"
-var vault_path string
+var secret_path string
 
 var vault_token string = "root"
 
@@ -75,8 +75,8 @@ func vault_auth_with_approle(role_id string, secret_id string) error {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Authenticate with Vault using LDAP|Userpass auth
-func vault_auth_with_ldap_userpass(method string, username string, password string) error {
+// Authenticate with Vault using LDAP|Userpass|OKTA auth
+func vault_auth_with_ldap_userpass_okta(method string, username string, password string) error {
   login_path := "auth/" + method + "/login/" + username
   fmt.Printf("INFO: login path is %s\n",login_path)
 
@@ -100,15 +100,15 @@ func vault_auth_with_ldap_userpass(method string, username string, password stri
 
 ////////////////////////////////////////////////////////////////////////////////
 // Read secret from Vault
-func vault_read_secret(vault_path string) {
+func vault_read_secret(secret_path string) {
   c := VClient.Logical()
 
-  fmt.Printf("INFO: Requested secret at path %s:\n", vault_path)
+  fmt.Printf("INFO: Requested secret at path %s:\n", secret_path)
 
-  secret, err := c.Read(vault_path)
+  secret, err := c.Read(secret_path)
 
   if err != nil {
-		fmt.Println("Error reading secret at %s: %v", vault_path, err)
+		fmt.Println("Error reading secret at %s: %v", secret_path, err)
 		return
 	}
 
@@ -172,9 +172,9 @@ func main() {
 
   flag.StringVar(&vault_token, "vault_token", LookupEnvOrString("VAULT_TOKEN", vault_token), "Vault Token if using token auth.")
 
-  flag.StringVar(&vault_path, "vault_path", LookupEnvOrString("VAULT_PATH", vault_path), "Path in Vault from which to retrieve the secret.")
+  flag.StringVar(&secret_path, "secret_path", LookupEnvOrString("SECRET_PATH", secret_path), "Path in Vault from which to retrieve the secret.")
 
-  flag.StringVar(&auth, "auth", LookupEnvOrString("VAULT_AUTH", auth), "Auth method - token, approle, ldap or userpass.")
+  flag.StringVar(&auth, "auth", LookupEnvOrString("VAULT_AUTH", auth), "Auth method - token|approle|ldap|okta|userpass.")
 
   flag.StringVar(&role_id, "role_id", LookupEnvOrString("VAULT_APPROLE_ROLE_ID", role_id), "AppRole Auth Role ID.")
   flag.StringVar(&secret_id, "secret_id", LookupEnvOrString("VAULT_APPROLE_SECRET_ID", secret_id), "AppRole Auth Secret ID.")
@@ -190,15 +190,15 @@ func main() {
     os.Exit(1)
   }
 
-  if vault_path == "" {
-    fmt.Println("Error: No Vault Path specified.\n")
+  if secret_path == "" {
+    fmt.Println("Error: No Secret Path specified.\n")
     flag.Usage()
     os.Exit(1)
   }
 
   fmt.Printf("INFO: vault_addr is %s\n", vault_addr)
   fmt.Printf("INFO: auth method is %s\n", auth)
-  fmt.Printf("INFO: vault_path is %s\n", vault_path)
+  fmt.Printf("INFO: secret_path is %s\n", secret_path)
 
   fmt.Printf("\n")
 
@@ -226,24 +226,13 @@ func main() {
         fmt.Println(err)
         return
       }
-    case "ldap":
+    case "ldap", "okta", "userpass":
       if (username == "" || password == "") {
-        fmt.Println("Error: username and password must be specified for ldap auth.")
+        fmt.Printf("Error: username and password must be specified for %s auth.", auth)
         flag.Usage()
         os.Exit(1)
       }
-      err = vault_auth_with_ldap_userpass(auth, username, password)
-      if err != nil {
-        fmt.Println(err)
-        return
-      }
-    case "userpass":
-      if (username == "" || password == "") {
-        fmt.Println("Error: username and password must be specified for userpass auth.")
-        flag.Usage()
-        os.Exit(1)
-      }
-      err = vault_auth_with_ldap_userpass(auth, username, password)
+      err = vault_auth_with_ldap_userpass_okta(auth, username, password)
       if err != nil {
         fmt.Println(err)
         return
@@ -253,6 +242,6 @@ func main() {
       os.Exit(1)
   }
 
-  vault_read_secret(vault_path)
+  vault_read_secret(secret_path)
 
 }
