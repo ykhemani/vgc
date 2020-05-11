@@ -1,6 +1,6 @@
 # Vault client written in golang - WIP
 
-This application connects to a [HashiCorp](https://hashicorp.com) [Vault](https://vaultproject.io) cluster using the [github/hashicorp/vault/api](https://godoc.org/github.com/hashicorp/vault/api) package and retrieves a kv v2 secret.
+This little app was written to become more familiar with [go](https://golang.org/) as well as with the [github/hashicorp/vault/api](https://godoc.org/github.com/hashicorp/vault/api) package. It uses this package to connect to a [HashiCorp](https://hashicorp.com) [Vault](https://vaultproject.io) cluster. It is not meant to be a reference app.
 
 ## Usage
 
@@ -57,7 +57,7 @@ Requested secret at path kv/data/demo/app2:
 
 ## Compiling
 
-Built using go 1.13.5.
+Tested using go 1.13.5.
 
 ```
 go get github.com/hashicorp/vault/api
