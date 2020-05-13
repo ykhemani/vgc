@@ -1,4 +1,4 @@
-# Vault client written in golang - WIP
+# vgc - WIP [![CircleCI](https://circleci.com/gh/ykhemani/vgc.svg?style=svg)](https://circleci.com/gh/ykhemani/vgc)
 
 This little app was written to become more familiar with [go](https://golang.org/) as well as with the [github/hashicorp/vault/api](https://godoc.org/github.com/hashicorp/vault/api) package. It uses this package to connect to a [HashiCorp](https://hashicorp.com) [Vault](https://vaultproject.io) cluster. It is not meant to be a reference app.
 
